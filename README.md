@@ -76,6 +76,6 @@ The database lab\_db is created automatically on startup. To browse your tables 
 🧪 Development Workflow
 -----------------------
 
-*   **Hot Reloading:** The server/ and client/ folders are mounted as Docker volumes. Changes made of local code reflect instantly inside the containers.
+*   **Hot Reloading:** The ```server/``` and ```client/``` folders are mounted as Docker volumes. Changes made of local code reflect instantly inside the containers.
     
 *   **Database Persistence:** All data is stored in a named volume (postgres\_data), so your data remains safe even if containers are stopped.
