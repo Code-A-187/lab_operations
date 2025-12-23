@@ -43,7 +43,7 @@ Copy the example environment file and fill in your preferred credentials:
 🗄 Database Setup (pgAdmin)
 ---------------------------
 
-The database lab\_db is created automatically on startup. To browse your tables via the UI:
+The database ```lab_db``` is created automatically on startup. To browse your tables via the UI:
 
 1.  Open **pgAdmin** at ```http://localhost:5050```.
     
@@ -51,7 +51,7 @@ The database lab\_db is created automatically on startup. To browse your tables 
     
 3.  **Register a New Server:**
     
-    *   **Name:** ```Lab\_System```
+    *   **Name:** ```Lab_System```
         
     *   **Connection Tab > Host:** ```db```
         
