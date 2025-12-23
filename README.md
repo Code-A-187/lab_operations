@@ -8,7 +8,7 @@ Lab Operations Management System - full-stack application for equipment tracking
 
 ## Getting Started
 1. **Clone the repository:**
-   `git clone 'https://github.com/Code-A-187/lab_operations'
+   `git clone https://github.com/Code-A-187/lab_operations'
 2. **Setup Environment:**
    `cp .env.example .env` (Then edit the .env with your own passwords).
 3. **Launch the app:**
