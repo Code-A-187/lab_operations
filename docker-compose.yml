@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  server:
+    build: ./server
+    volumes:
+      - ./server:/app
+    ports: 
+      - "8000:8000"
+    environment:
+      # We construct the URL using the variables from .env
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+  
+  client:
+    build: ./client
+    volumes:
+      - ./client:/app
+      - /app/node_modules # prevents local empty node_modules from overwriting container
+    ports:
+      - "3000:5173" # Vite uses 5173 inside the container
+    depends_on:
+      - server
+  
+volumes:
+  postgres_data:
