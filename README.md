@@ -24,15 +24,15 @@ You do **not** need to install PostgreSQL or Python on your local machine. Every
 
 ### 1\. Clone the repository
 
-git clone https://github.com/Code-A-187/lab\_operations.git
+```git clone https://github.com/Code-A-187/lab\_operations.git```
 
-cd lab\_operations
+```cd lab\_operations```
 
 ### 2\. Configure Environment Variables
 
 Copy the example environment file and fill in your preferred credentials:
 
-cp .env.example .env
+```cp .env.example .env```
 
 > **Note:** Open the .env file to customize your passwords. These values are used by both Docker and the FastAPI server to establish a secure database connection.
 
