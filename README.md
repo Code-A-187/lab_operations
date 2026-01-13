@@ -38,24 +38,24 @@ Copy the example environment file and fill in your preferred credentials:
 
 ### 3\. Launch the Application
 
-docker-compose up --build
+```docker-compose up --build```
 
 🗄 Database Setup (pgAdmin)
 ---------------------------
 
-The database lab\_db is created automatically on startup. To browse your tables via the UI:
+The database ```lab_db``` is created automatically on startup. To browse your tables via the UI:
 
-1.  Open **pgAdmin** at http://localhost:5050.
+1.  Open **pgAdmin** at ```http://localhost:5050```.
     
 2.  Login with the credentials set in your .env.
     
 3.  **Register a New Server:**
     
-    *   **Name:** Lab\_System
+    *   **Name:** ```Lab_System```
         
-    *   **Connection Tab > Host:** db
+    *   **Connection Tab > Host:** ```db```
         
-    *   **Port:** 5432
+    *   **Port:** ```5432```
         
     *   **Username/Password:** Use the values defined in your .env.
         
@@ -65,17 +65,17 @@ The database lab\_db is created automatically on startup. To browse your tables 
 🔗 Service Map
 --------------
 
-*   **Frontend:** http://localhost:3000 (The React user interface)
+*   **Frontend:** ```http://localhost:3000``` (The React user interface)
     
-*   **Backend API:** http://localhost:8000 (The FastAPI base URL)
+*   **Backend API:** ```http://localhost:8000``` (The FastAPI base URL)
     
-*   **API Documentation:** http://localhost:8000/docs (Interactive Swagger UI for testing endpoints)
+*   **API Documentation:** ```http://localhost:8000/docs``` (Interactive Swagger UI for testing endpoints)
     
-*   **Database Management:** http://localhost:5050 (pgAdmin 4 dashboard)
+*   **Database Management:** ```http://localhost:5050``` (pgAdmin 4 dashboard)
 
 🧪 Development Workflow
 -----------------------
 
-*   **Hot Reloading:** The server/ and client/ folders are mounted as Docker volumes. Changes made of local code reflect instantly inside the containers.
+*   **Hot Reloading:** The ```server/``` and ```client/``` folders are mounted as Docker volumes. Changes made of local code reflect instantly inside the containers.
     
 *   **Database Persistence:** All data is stored in a named volume (postgres\_data), so your data remains safe even if containers are stopped.
