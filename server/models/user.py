@@ -1,11 +1,12 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Enum
+from datetime import datetime
+from sqlalchemy import Boolean, String, DateTime
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 import enum
 
 class UserRole(str, enum.Enum):
-    ADMIN = "manager"
+    ADMIN = "admin"
     MANAGER = "manager"
     TECHNICIAN = "technician"
 
@@ -13,17 +14,17 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password_hash= Column(String, nullable=False)
-    role = Column(String, default=UserRole.TECHNICIAN)
-    first_name = Column(String)
-    last_name = Column(String)
-    is_active = Column(Boolean, default=False)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    username: Mapped[str] = mapped_column(String, unique=True)
+    first_name: Mapped[str | None] = mapped_column(String)
+    last_name: Mapped[str | None] = mapped_column(String)
+    role: Mapped[str] = mapped_column(String, default=UserRole.TECHNICIAN)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updatet_at = Column(DateTime(timezone=True), server_onupdate=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    update_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
-    equipment_created = relationship("Equipment", back_populates="creator")
-    maintenance_records = relationship("MaintenanceLog", back_populates="technician")
+    equipment_created: Mapped[list["Equipment"]] = relationship("Equipment", back_populates="creator")
+    maintenance_records: Mapped[list["MaintenanceLog"]] = relationship("MaintenanceLog", back_populates="technician")
