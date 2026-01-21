@@ -1,27 +1,27 @@
-from typing import Union
 from fastapi import FastAPI
 
 # Corrected Imports
 from database import engine, Base
-from schemas.schema import Item
-from models.user import User
+
+from api.auth import router as auth_router
+
 
 Base.metadata.create_all(bind=engine)
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Lab Managment System",
+    description="API for managing lab equipment and maintenance",
+    version="0.1.0"
+    )
 
+
+app.include_router(auth_router)
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-# Added the missing @ and corrected the path
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-# Added the missing @ and leading slash
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name}
+def health_check():
+    """Simple route to verify the server is alive."""
+    return {
+        "status": "online",
+        "message": "Lab Management API is running"
+    }
