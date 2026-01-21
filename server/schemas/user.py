@@ -10,16 +10,15 @@ class UserRole(str, Enum):
 # needed info to create User
 class UserCreate(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=8)
-    username: str = Field(min_length=3)
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    role: Optional[str] =  UserRole.TECHNICIAN
+    password: str = Field(min_length=8, max_length=50)
+    username: str = Field(..., min_length=3, max_length=50)
 
 # response(what returns to client) when user is creted
 class UserOut(BaseModel):
     id: int
+    username: str
     email: EmailStr
+    is_active: bool
     massage: str = ("Registration successful. Please verify your email.")
 
     model_config = ConfigDict(from_atributes = True)
