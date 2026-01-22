@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 async def register_new_user(db: AsyncSession, user_data: UserCreate):
     # we make single query to find any user with email or username that new user is trying to use, so there are no duplicates
     query = select(User).where(
-        or_(User.email == user_data.email, User.username == user_data.usern) # we can use "|" instead of "_or" but need to watch for the right parentesis
+        or_(User.email == user_data.email, User.username == user_data.username) # we can use "|" instead of "_or" but need to watch for the right parentesis
     )
 
     result = await db.execute(query) # awaits the database to make (execute) the query
@@ -37,8 +37,8 @@ async def register_new_user(db: AsyncSession, user_data: UserCreate):
     new_user = User(
         username=user_data.username,
         email=user_data.email,
-        password=hashed_password,
-        is_acitve=False
+        password_hash=hashed_password,
+        is_active=False
     )
 
     try: # try to save user in DB and return it
