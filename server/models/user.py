@@ -24,7 +24,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    update_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), onupdate=func.now())
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
-    equipment_created: Mapped[list["Equipment"]] = relationship("Equipment", back_populates="creator")
-    maintenance_records: Mapped[list["MaintenanceLog"]] = relationship("MaintenanceLog", back_populates="technician")
+    # equipment_created: Mapped[list["Equipment"]] = relationship("Equipment", back_populates="creator")
+    # maintenance_records: Mapped[list["MaintenanceLog"]] = relationship("MaintenanceLog", back_populates="technician")

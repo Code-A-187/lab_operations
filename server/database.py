@@ -1,17 +1,23 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 import os
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-URL_DATABASE = os.getenv("DATABASE_URL", "postgresql://lab_user:lab_password@db:5432/lab_db")
 
-engine = create_engine (URL_DATABASE)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+AssyncSessionLocal = async_sessionmaker(
+    bind=engine, 
+    class_=AsyncSession, 
+    expire_on_commit=False # prevents "greenlet" errors
+    )
+
+class Base(DeclarativeBase):
+    pass
+
+async def get_async_db():
+    async with AssyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()

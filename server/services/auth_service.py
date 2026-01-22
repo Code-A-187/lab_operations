@@ -22,11 +22,23 @@ def register_new_user(db: Session, user_data: UserCreate):
         return db_user
     except IntegrityError as e:
         db.rollback()
-        error_msg = str(e.orig)
+        error_msg = str(e.orig).lower()
 
         if "users_email_key" in error_msg:
-            raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "Email already registered")
-        raise HTTPException(status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, detail = "Database error")
+            raise HTTPException(
+                status_code = status.HTTP_400_BAD_REQUEST, 
+                detail = "Email already registered",
+                )
+        
+        if "users_username_key" in error_msg:
+            raise HTTPException(
+                status_code = status.HTTP_400_BAD_REQUEST, 
+                detail = "Username already taken",
+                )
+        raise HTTPException(
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail = "Database error",
+            )
 
 
 

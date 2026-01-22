@@ -1,12 +1,10 @@
 from fastapi import FastAPI
+import uvicorn
 
 # Corrected Imports
 from database import engine, Base
-
 from api.auth import router as auth_router
 
-
-Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(
@@ -18,6 +16,17 @@ app = FastAPI(
 
 app.include_router(auth_router)
 
+@app.on_event("startup")
+async def init_db():
+    # This is the 'magic' part for Async + SQLAlchemy 2.0
+    async with engine.begin() as conn:
+        # We run the synchronous 'create_all' inside an async connection
+        await conn.run_sync(Base.metadata.create_all)
+    print("Database tables created successfully!")
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
 @app.get("/")
 def health_check():
     """Simple route to verify the server is alive."""
@@ -25,3 +34,4 @@ def health_check():
         "status": "online",
         "message": "Lab Management API is running"
     }
+
