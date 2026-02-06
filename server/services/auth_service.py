@@ -2,9 +2,8 @@ from sqlalchemy import select, or_
 from core.security import hash_password
 from models.user import User
 from schemas.user import UserCreate
-from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
+from core.exceptions import DatabaseError, UserAlreadyExistsError
 
 
 async def register_new_user(db: AsyncSession, user_data: UserCreate):
@@ -26,10 +25,7 @@ async def register_new_user(db: AsyncSession, user_data: UserCreate):
                 errors.append("Username is already taken") # check if username is used from any user
             
             # raise error and returns list with errors for FE to know what to show to the user. That way user will know what to change so only unique email and username are used.
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=errors
-            )
+            raise UserAlreadyExistsError(message=errors)
     # after unique check is done we put pasword in hash function
     hashed_password = hash_password(user_data.password)
 
@@ -47,13 +43,9 @@ async def register_new_user(db: AsyncSession, user_data: UserCreate):
         await db.refresh(new_user)
         return new_user
     
-    except Exception as e: # if something went wrong with DB when try to save new user return error 500
+    except Exception: # if something went wrong with DB when try to save new user return error 500
         await db.rollback()
-        print(f"Database error {e}")
-        raise HTTPException(
-            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail = "Technical error occurred while saving the new user",
-            )
+        raise DatabaseError("Could not save user to database")
 
 
 
