@@ -20,7 +20,7 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
     is_active: bool
-    massage: str = ("Registration successful. Please verify your email.")
+    message: str = ("Registration successful. Please verify your email.")
 
     model_config = ConfigDict(from_atributes = True)
 
