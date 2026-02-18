@@ -1,5 +1,5 @@
 from sqlalchemy import select, or_
-from core.security import hash_password
+from core.security import create_verification_token, hash_password
 from models.user import User
 from schemas.user import UserCreate
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,10 +41,21 @@ async def register_new_user(db: AsyncSession, user_data: UserCreate):
         db.add(new_user)
         await db.commit()
         await db.refresh(new_user)
+
+        token = create_verification_token(new_user.id)
+
+        verification_link = f"http://localhost:8000/auth/verify-email?token={token}"
+        print("\n" + "="*60)
+        print(f"DEBUG: VERIFICATION LINK FOR {new_user.email}:")
+        print(verification_link)
+        print("="*60 + "\n")
+
         return new_user
     
-    except Exception: # if something went wrong with DB when try to save new user return error 500
+    except Exception as e: # if something went wrong with DB when try to save new user return error 500
         await db.rollback()
+        # log the actual error before raice DatabaseError
+        print(f"Database error during registration: {e}")
         raise DatabaseError("Could not save user to database")
 
 
