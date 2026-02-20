@@ -20,6 +20,8 @@ if not SECRET_KEY:
 
 VERIFICATION_TOKEN_EXPIRE_HOURS = int(os.getenv("VERIFICATION_TOKEN_EXPIRE_HOURS", "24"))
 
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
 
@@ -67,3 +69,8 @@ def verify_email_token(token: str) -> Optional[int]:
         print(f"DEBUG: JWT Error: {e}")
         return None
 
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm = ALGORITHM)

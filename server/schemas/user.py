@@ -14,7 +14,7 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8, max_length=50)
     
 
-# response(what returns to client) when user is creted
+# response(what returns to client) when user is created
 class UserOut(BaseModel):
     id: int
     email: EmailStr
@@ -25,4 +25,9 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_atributes = True)
 
 class UserLogin(BaseModel):
-    pass
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

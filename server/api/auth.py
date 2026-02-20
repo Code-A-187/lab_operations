@@ -6,9 +6,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_db
-from schemas.user import UserCreate, UserOut
+from schemas.user import UserCreate, UserOut, Token, UserLogin
 from core.exceptions import DatabaseError, UserAlreadyExistsError
-from core.security import verify_email_token
+from core.security import create_access_token, verify_email_token, verify_password
 from models.user import User
 from services.auth_service import register_new_user
 
@@ -67,3 +67,28 @@ async def verify_email(token: str, db:AsyncSession = Depends(get_async_db)):
     await db.commit()
 
     return {"message": "Email verified successfully! You can now log in."}
+
+@router.post("/login", response_model = Token)
+async def login(login_data: UserLogin, db: AsyncSession = Depends(get_async_db)):
+    # fetch user aync
+    result = await db.execute(select(User).where(User.email == login_data.email))
+    user = result.scalars().first()
+
+    # if user missing or password is wrong we use generic error message to prevent info leak
+    if not user or not verify_password(login_data.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # check if user is verified
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified. Please check your inbox."
+        ) 
+    
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return {"access_token": access_token, "token_type": "bearer"}
+
