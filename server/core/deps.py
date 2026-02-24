@@ -46,3 +46,14 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+async def get_verified_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    # check if they are active AND have a verification timestamp
+    if not current_user.is_active or current_user.verified_at is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This action requires a verified email address."
+        )
+    return current_user

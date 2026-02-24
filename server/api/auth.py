@@ -91,8 +91,14 @@ async def login(
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email not verified. Please check your inbox."
-        ) 
+            detail="Account is disabled."
+        )
+    
+    if user.verified_at is None:
+        raise HTTPException(
+            status_code=403, 
+            detail="Please verify your email before logging in."
+        )
     
     access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}

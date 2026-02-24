@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta, timezone
 import pytest
+import jwt
 from sqlalchemy import select
 from models.user import User
-from core.security import create_verification_token, hash_password
+from core.security import ALGORITHM, SECRET_KEY, create_access_token, create_verification_token, hash_password
+
 
 @pytest.mark.asyncio
 async def test_register_user_initial_state(client, db_session):
@@ -76,4 +79,130 @@ async def test_email_invalid_token(client):
     assert response.status_code == 400
     assert "Invalid or expired verification link." in response.json()["detail"]
 
+@pytest.mark.asyncio
+async def test_login_success_verified_user(client, db_session):
+    password = "correct_password"
 
+    user = User(
+        username ="login_user",
+        email="login@lab.com",
+        password_hash=hash_password(password),
+        is_active=True,
+        verified_at=datetime.now(timezone.utc)
+    )
+    db_session.add(user)
+    await db_session.commit()
+
+    login_payload = {
+        "username": "login@lab.com",
+        "password": password
+    }
+    
+    response = await client.post("auth/login", data=login_payload)
+
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+
+@pytest.mark.asyncio
+async def test_login_fails_unverified_user(client, db_session):
+    # User exists but verified_at is None
+    password = "correct_password"
+    user = User(
+        username="unverified_tester",
+        email="unverified@lab.com",
+        password_hash=hash_password(password),
+        is_active=True, # True but verified_at=None
+        verified_at=None
+    )
+
+    db_session.add(user)
+    await db_session.commit()
+
+    # fill in credential
+    response = await client.post("/auth/login", data={
+        "username": "unverified@lab.com",
+        "password": password
+    })
+
+    # assert
+    assert response.status_code == 403
+    assert "verify" in response.json()["detail"].lower()
+
+@pytest.mark.asyncio
+async def test_login_fails_disabled_account(client, db_session):
+    user = User(
+        username="disabled_tester",
+        email="disabled@lab.com",
+        password_hash=hash_password("password"),
+        is_active=False  # The "Disabled" gatekeeper
+    )
+    db_session.add(user)
+    await db_session.commit()
+
+    response = await client.post("/auth/login", data={
+        "username": "disabled@lab.com",
+        "password": "password"
+    })
+
+    assert response.status_code == 403
+    assert "disabled" in response.json()["detail"].lower()
+    
+@pytest.mark.asyncio
+async def test_get_me_success(client, db_session):
+    # local Setup
+    user = User(
+        username="local_tester",
+        email="local@test.com",
+        password_hash=hash_password("password123"),
+        is_active=True,
+        verified_at=datetime.now(timezone.utc)
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # 2. Action
+    token = create_access_token(data={"sub": str(user.id)})
+    headers = {"Authorization": f"Bearer {token}"}
+    response = await client.get("/auth/me", headers=headers)
+
+    # 3. Assert
+    assert response.status_code == 200
+    assert response.json()["email"] == "local@test.com"
+
+@pytest.mark.asyncio
+async def test_get_me_invalid_token(client):
+    # pass a garbage token
+    headers = {"Authorization": "Bearer not-a-real-token"}
+    response = await client.get("/auth/me", headers=headers)
+
+    # should match your credentials_exception
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+@pytest.mark.asyncio
+async def test_get_me_expired_token(client, db_session):
+    # 1. Setup local user
+    user = User(
+        username="expired_tester",
+        email="expired@test.com",
+        password_hash=hash_password("password"),
+        is_active=True,
+        verified_at=datetime.now(timezone.utc)
+    )
+    db_session.add(user)
+    await db_session.commit()
+
+    # 2. Manually craft an expired token
+    expire = datetime.now(timezone.utc) - timedelta(hours=1)
+    to_encode = {"sub": str(user.id), "exp": int(expire.timestamp())}
+    # Note: Use your SECRET_KEY and ALGORITHM here
+    expired_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+    headers = {"Authorization": f"Bearer {expired_token}"}
+    response = await client.get("/auth/me", headers=headers)
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
