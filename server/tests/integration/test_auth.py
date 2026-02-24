@@ -163,12 +163,12 @@ async def test_get_me_success(client, db_session):
     await db_session.commit()
     await db_session.refresh(user)
 
-    # 2. Action
+    # action
     token = create_access_token(data={"sub": str(user.id)})
     headers = {"Authorization": f"Bearer {token}"}
     response = await client.get("/auth/me", headers=headers)
 
-    # 3. Assert
+    # assert
     assert response.status_code == 200
     assert response.json()["email"] == "local@test.com"
 
@@ -195,7 +195,7 @@ async def test_get_me_expired_token(client, db_session):
     db_session.add(user)
     await db_session.commit()
 
-    # 2. Manually craft an expired token
+    # manually craft an expired token
     expire = datetime.now(timezone.utc) - timedelta(hours=1)
     to_encode = {"sub": str(user.id), "exp": int(expire.timestamp())}
     # Note: Use your SECRET_KEY and ALGORITHM here
