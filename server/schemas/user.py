@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from enum import Enum
@@ -20,9 +21,12 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
     is_active: bool
-    message: str = ("Registration successful. Please verify your email.")
+    verified_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_atributes = True)
+
+class UserCreateResponse(UserOut):
+    message: str = "Registration successful. Please verify your email."
 
 class UserLogin(BaseModel):
     email: EmailStr

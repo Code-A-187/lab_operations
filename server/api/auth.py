@@ -2,20 +2,22 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_db
-from schemas.user import UserCreate, UserOut, Token, UserLogin
+from schemas.user import UserCreate, UserCreateResponse, UserOut, Token, UserLogin
 from core.exceptions import DatabaseError, UserAlreadyExistsError
 from core.security import create_access_token, verify_email_token, verify_password
 from models.user import User
+from core.deps import get_current_user
 from services.auth_service import register_new_user
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_async_db)):
     # it gets the data from register form use function to check for duplicates, return the registered user
     try:
@@ -69,13 +71,16 @@ async def verify_email(token: str, db:AsyncSession = Depends(get_async_db)):
     return {"message": "Email verified successfully! You can now log in."}
 
 @router.post("/login", response_model = Token)
-async def login(login_data: UserLogin, db: AsyncSession = Depends(get_async_db)):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    db: AsyncSession = Depends(get_async_db)
+    ):
     # fetch user aync
-    result = await db.execute(select(User).where(User.email == login_data.email))
+    result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()
 
     # if user missing or password is wrong we use generic error message to prevent info leak
-    if not user or not verify_password(login_data.password, user.password_hash):
+    if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -91,4 +96,14 @@ async def login(login_data: UserLogin, db: AsyncSession = Depends(get_async_db))
     
     access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/logout")
+async def logout():
+    # app is working with stateless JWT and that is dummy logout route. If use cookies in future can be used.
+    return {"message": "Successfully logged out"}
+
+@router.get("/me", response_model=UserOut)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
 
