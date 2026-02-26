@@ -1,10 +1,16 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy import Boolean, String, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 import enum
+
+from models.equipment import Equipment
+from models.maintenance import MaintenanceRecord
+from models.measurements import ImportBatch
+
+
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
@@ -28,5 +34,6 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), onupdate=func.now())
 
-    # equipment_created: Mapped[list["Equipment"]] = relationship("Equipment", back_populates="creator")
-    # maintenance_records: Mapped[list["MaintenanceLog"]] = relationship("MaintenanceLog", back_populates="technician")
+    equipment_created: Mapped[list["Equipment"]] = relationship("Equipment", back_populates="creator")
+    maintenance_records: Mapped[List["MaintenanceRecord"]] = relationship(back_populates="technician")
+    batches_uploaded: Mapped[list["ImportBatch"]] = relationship(back_populates="uploader")
