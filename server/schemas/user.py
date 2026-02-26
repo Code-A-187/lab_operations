@@ -1,12 +1,6 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-from enum import Enum
-
-class UserRole(str, Enum):
-    ADMIN = "admin"
-    MANAGER = "manager"
-    TECHNICIAN = "technician"
 
 # needed info to create User
 class UserCreate(BaseModel):
