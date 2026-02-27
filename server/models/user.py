@@ -1,12 +1,16 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from sqlalchemy import Boolean, String, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 import enum
 
-
+if TYPE_CHECKING:
+    
+    from .maintenance import MaintenanceRecord
+    from .equipment import Equipment
+    from .measurements import ImportBatch
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"

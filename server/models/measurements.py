@@ -1,11 +1,15 @@
 from sqlalchemy import ForeignKey, String, Text, DateTime, Float, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Optional
+from typing import TYPE_CHECKING, List, Optional
 from datetime import datetime
 
 from database import Base
 
 
+if TYPE_CHECKING:
+    from .user import User
+    from .equipment import Equipment
+ 
 class MeasurementData(Base):
     __tablename__ = "measurement_data"
 
@@ -42,5 +46,5 @@ class ImportBatch(Base):
     status: Mapped[str] = mapped_column(String(50), default="pending")
     notes: Mapped[Optional[str]] = mapped_column(Text)
 
-    measurements: Mapped[list["MeasurementData"]] = relationship(back_populates="batch")
+    measurements: Mapped[List["MeasurementData"]] = relationship(back_populates="batch")
     uploader: Mapped["User"] = relationship()

@@ -1,10 +1,14 @@
 from sqlalchemy import ForeignKey, String, Text, DateTime, Float, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 
 from database import Base
 
+if TYPE_CHECKING:
+    from .user import User
+    from.equipment import Equipment
+    from .vendor import Vendor 
 
 class MaintenanceRecord(Base):
     __tablename__ = "maintenance_records"
