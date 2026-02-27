@@ -4,8 +4,7 @@ from typing import Optional
 from datetime import datetime
 
 from database import Base
-from models.equipment import Equipment
-from models.user import User
+
 
 class MeasurementData(Base):
     __tablename__ = "measurement_data"

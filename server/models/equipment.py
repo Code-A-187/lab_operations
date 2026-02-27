@@ -5,11 +5,7 @@ from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-from models.user import User
-from models.location import Location
-from models.vendor import Vendor
-from models.maintenance import MaintenanceRecord
-from models.measurements import MeasurementData
+
 
 class EquipmentStatus(str, enum.Enum):
     AVAILABLE="available"
@@ -31,8 +27,8 @@ class Equipment(Base):
 
     creator_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    purchase_date = Mapped[Optional: datetime] = mapped_column(DateTime(timezone=True))
-    warranty_expiry = Mapped[Optional: datetime] = mapped_column(DateTime(timezone=True))
+    purchase_date: Mapped[Optional: datetime] = mapped_column(DateTime(timezone=True))
+    warranty_expiry: Mapped[Optional: datetime] = mapped_column(DateTime(timezone=True))
 
     status: Mapped[EquipmentStatus] = mapped_column(default=EquipmentStatus.AVAILABLE)
     notes: Mapped[Optional: str] = mapped_column(Text, nullable=True)

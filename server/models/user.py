@@ -6,10 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 import enum
 
-from models.equipment import Equipment
-from models.maintenance import MaintenanceRecord
-from models.measurements import ImportBatch
-
 
 
 class UserRole(str, enum.Enum):

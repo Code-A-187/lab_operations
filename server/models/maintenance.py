@@ -4,9 +4,7 @@ from typing import Optional
 from datetime import datetime
 
 from database import Base
-from models.equipment import Equipment
-from models.user import User
-from models.vendor import Vendor
+
 
 class MaintenanceRecord(Base):
     __tablename__ = "maintenance_records"
