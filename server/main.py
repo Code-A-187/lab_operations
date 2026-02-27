@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import uvicorn
@@ -8,10 +9,17 @@ from api.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Try to connect up to 5 times
+    for attempt in range(5):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            print("Database connected!")
+            break
+        except Exception as e:
+            print(f"Waiting for database... (Attempt {attempt + 1})")
+            await asyncio.sleep(2) # Wait 2 seconds before trying again
     yield
-    # await engine.dispose()
 
 app = FastAPI(
     title="Lab Managment System",
