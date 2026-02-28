@@ -12,7 +12,7 @@ class Vendor(Base):
 
     __tablename__ = "vendors"
 
-    id: Mapped[str] = mapped_column(primary_key = True, index = True)
+    id: Mapped[int] = mapped_column(primary_key = True, index = True)
     company_name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     contact_person: Mapped[Optional: str] = mapped_column(String(255), nullable=True)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)

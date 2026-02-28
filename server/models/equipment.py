@@ -25,7 +25,7 @@ class Equipment(Base):
 
     __tablename__ = "equipment"
 
-    id: Mapped[str] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     model: Mapped[str] = mapped_column(String(255), nullable=False)
     serial_number: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)

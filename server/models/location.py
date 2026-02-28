@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class Location(Base):
     __tablename__ = "locations"
 
-    id: Mapped[str] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     building: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     room: Mapped[str] = mapped_column(String(50), nullable=False)
     area_description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
