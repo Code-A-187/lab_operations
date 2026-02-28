@@ -11,8 +11,6 @@ class EquipmentBase(BaseModel):
     model: str
     serial_number: str
     name: Optional[str]=None
-    vendor_id: Optional[int] = None
-    location_id: Optional[int] = None
     purchase_date: Optional[datetime] = None
     warranty_expiry: Optional[datetime] = None
     status: EquipmentStatus = EquipmentStatus.AVAILABLE

@@ -6,6 +6,7 @@ import uvicorn
 # Corrected Imports
 from database import engine, Base
 from api.auth import router as auth_router
+from api.equipment import router as equipment_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,6 +31,7 @@ app = FastAPI(
 
 
 app.include_router(auth_router)
+app.include_router(equipment_router)
 
 @app.get("/")
 def health_check():
