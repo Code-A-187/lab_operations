@@ -29,7 +29,7 @@ async def register_new_user(db: AsyncSession, user_data: UserCreate):
     # after unique check is done we put pasword in hash function
     hashed_password = hash_password(user_data.password)
 
-    # creatinf new user instance 
+    # creating new user instance 
     new_user = User(
         username=user_data.username,
         email=user_data.email,
