@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
-from sqlalchemy import String, Text, func
+from sqlalchemy import Boolean, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -16,6 +16,8 @@ class Location(Base):
     room: Mapped[str] = mapped_column(String(50), nullable=False)
     area_description: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now)
