@@ -56,7 +56,7 @@ class EquipmentService:
         equipment = result.scalars().first()
         if not equipment:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND
+                status_code=status.HTTP_404_NOT_FOUND,
                 detail="Equipment not found"
                 )
         return equipment
