@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -40,6 +40,8 @@ class Equipment(Base):
 
     status: Mapped[EquipmentStatus] = mapped_column(default=EquipmentStatus.AVAILABLE)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now)

@@ -36,5 +36,12 @@ class EquipmentResponse(EquipmentBase):
     creator_id: int # who registered the gear
     vendor_id: Optional[int]
     location_id: Optional[int]
+
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    vendor: Optional[VendorResponse] = None
+    location: Optional[LocationResponse] = None
     
     model_config = ConfigDict(from_attributes=True)
