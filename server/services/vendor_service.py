@@ -31,7 +31,7 @@ class VendorService:
         return vendor
     
     async def get_multi(self, db:AsyncSession, skip: int = 0, limit: int = 100, include_inactive: bool = False):
-        query = select(Vendor).order_by(Vendor.name)
+        query = select(Vendor).order_by(Vendor.company_name)
         
         if not include_inactive:
             query = query.where(Vendor.is_active == True)
@@ -51,7 +51,7 @@ class VendorService:
         
         await db.commit()
         await db.refresh(db_obj)
-        await db_obj
+        return db_obj
     
     async def soft_delete(self, db: AsyncSession, vendor_id: int) -> Vendor:
         """Flips is_active from True to False without removing the row."""

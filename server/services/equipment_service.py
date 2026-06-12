@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas.equipment import EquipmentCreate, EquipmentUpdate
@@ -44,7 +44,20 @@ class EquipmentService:
         db.add(db_obj)
         await db.commit()
         await db.refresh(db_obj)
-        return db_obj
+
+        stmt = (
+            select(Equipment)
+            .options(
+                selectinload(Equipment.vendor),
+                selectinload(Equipment.location)
+            )
+            .where(Equipment.id == db_obj.id)
+            )
+        
+        fetch_result = await db.execute(stmt)
+        full_db_obj = fetch_result.scalar_one()
+        
+        return full_db_obj
     
     async def get_by_id(self, db:AsyncSession, equipment_id: int) -> Equipment:
         query = select(Equipment).options(

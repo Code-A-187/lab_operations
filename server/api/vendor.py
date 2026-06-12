@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 
 from database import get_async_db
 from schemas.vendor import VendorCreate, VendorResponse, VendorUpdate
-from services import vendor_service
+from services.vendor_service import vendor_service
 
 
 router = APIRouter(prefix="/vendor", tags=["Vendor"])

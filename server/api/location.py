@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from schemas.location import LocationCreate, LocationResponse, LocationUpdate
 from database import get_async_db
-from services import location_service
+from services.location_service import location_service
 
 
 router = APIRouter(prefix="/location", tags=["Location"])

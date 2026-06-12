@@ -10,7 +10,6 @@ class VendorBase(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     specialties: Optional[str] = None
-    notes: Optional[str] = None
 
 class VendorCreate(VendorBase):
     pass
@@ -23,7 +22,7 @@ class VendorUpdate(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     specialties: Optional[str] = None
-    notes: Optional[str] = None
+    is_active: bool
 
 class VendorResponse(VendorBase):
     id: int
