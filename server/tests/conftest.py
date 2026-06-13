@@ -58,30 +58,21 @@ async def setup_database(test_engine):
 
 @ pytest.fixture
 async def db_session(TestingSessionLocal):
-    """ Wrapper that matches database.py session logic. """
-    session = TestingSessionLocal()
     
-    yield session
-    
-    # transaction rollback happens here automatically at the end of the test
-    try:
-        await session.close()
-    except RuntimeError:
-        # This catches "Event loop is closed" 
-        # preventing the ERROR status in pytest.
-        pass
+    async with TestingSessionLocal() as session:
+        yield session
 
 
 @ pytest.fixture
 async def client(db_session):
     """ Override the "get_async_db" ependency in FastApi routes. """
 
-    # tells the FastAPI to use our test session and not the real one that have access to real DB.
-    app.dependency_overrides[get_async_db] = lambda: db_session
+    async def override_get_db():
+        yield db_session
 
-    # creates virtual browser to send request to our API
+    app.dependency_overrides[get_async_db] = override_get_db
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     
-    # removes the override so the app goes back to normal after the test.
     app.dependency_overrides.clear()

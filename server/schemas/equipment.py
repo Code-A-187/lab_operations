@@ -30,6 +30,7 @@ class EquipmentUpdate(BaseModel):
     warranty_expiry: Optional[datetime] = None
     status: Optional[EquipmentStatus] = None
     notes: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class EquipmentResponse(EquipmentBase):
     id: int

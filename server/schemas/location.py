@@ -16,6 +16,7 @@ class LocationUpdate(BaseModel):
     room: Optional[str] = None
     area_description: Optional[str] = None
     notes: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class LocationResponse(LocationBase):
     id: int

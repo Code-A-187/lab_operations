@@ -22,7 +22,7 @@ class VendorUpdate(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
     specialties: Optional[str] = None
-    is_active: bool
+    is_active: Optional[bool] = None
 
 class VendorResponse(VendorBase):
     id: int
