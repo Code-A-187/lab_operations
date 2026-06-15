@@ -10,7 +10,7 @@ from services.location_service import location_service
 
 router = APIRouter(prefix="/location", tags=["Location"])
 
-@ router.post("/", response_model = LocationResponse, status_code=status.HTTP_201_CREATED)
+@ router.post("/create", response_model = LocationResponse, status_code=status.HTTP_201_CREATED)
 async def create_location(location_in: LocationCreate, db: AsyncSession = Depends(get_async_db)):
     return await location_service.create(db=db, obj_in=location_in)
 

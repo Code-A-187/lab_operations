@@ -85,8 +85,3 @@ async def test_soft_delete_vendor(client:AsyncClient):
     history_resp = await client.get("/vendor/list?include_inactive=true")
     hostory_vendors = [v["company_name"] for v in history_resp.json()]
     assert "Doomed vendor" in hostory_vendors
-
-                                   
-
-
-
