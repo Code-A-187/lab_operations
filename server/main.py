@@ -15,9 +15,8 @@ async def lifespan(app: FastAPI):
     # Try to connect up to 5 times
     for attempt in range(5):
         try:
-            async with engine.begin() as conn:
-                await conn.run_sync(Base.metadata.create_all)
-            print("Database connected!")
+            async with engine.connect():
+                print("Database connected successfully!")
             break
         except Exception as e:
             print(f"Waiting for database... (Attempt {attempt + 1})")
